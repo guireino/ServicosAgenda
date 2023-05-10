@@ -2,6 +2,7 @@ package com.example.servicosagenda.fragment;
 
 import static android.widget.Toast.LENGTH_LONG;
 
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Build;
 import android.os.Bundle;
@@ -19,9 +20,12 @@ import android.widget.CalendarView;
 import android.widget.Toast;
 
 import com.example.servicosagenda.R;
+import com.example.servicosagenda.activity.HorariosActivity;
+import com.example.servicosagenda.util.Util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
@@ -109,8 +113,8 @@ public class FragmentCalendario extends Fragment implements CalendarView.OnDateC
 
         //SimpleDateFormat data = new SimpleDateFormat("ddd/MM/yyyy", locale);
 
-        //diaAtual = Integer.parseInt(dia.format(dataLong));
-        diaAtual = 30;
+        diaAtual = Integer.parseInt(dia.format(dataLong));
+        //diaAtual = 30;
         mesAtual = Integer.parseInt(mes.format(dataLong));
         anoAtual = Integer.parseInt(ano.format(dataLong));
 
@@ -171,7 +175,7 @@ public class FragmentCalendario extends Fragment implements CalendarView.OnDateC
         //Toast.makeText(getContext(), "Dia: " + diaAtual + "\nMes: " + mesAtual + "\nAno: " + anoAtual, LENGTH_LONG).show();
     }
 
-    private void dataSelecionado(int dia, int mes, int ano) {
+    private void dataSelecionado(int diaSelected, int mesSelected, int anoSelected) {
 
         Locale locale = new Locale("pt", "BR");
 
@@ -181,19 +185,42 @@ public class FragmentCalendario extends Fragment implements CalendarView.OnDateC
 
         try{
 
-            data.setTime(simpleDateFormat.parse(dia + "/" + mes + "/" + ano));
+            data.setTime(simpleDateFormat.parse(diaSelected + "/" + mesSelected + "/" + anoSelected));
 
             boolean disponivelAgendamento;
 
-            if(mes != mesAtual){
+            if(mesSelected != mesAtual){
                 disponivelAgendamento = true;
             }else{
-                disponivelAgendamento = agendaDisponivel(data, dia);
+                disponivelAgendamento = agendaDisponivel(data, diaSelected);
             }
 
             // disponivelAgendamento == true
             if (disponivelAgendamento){
-                Toast.makeText(getContext(), "Você pode agendar nesse dia", LENGTH_LONG).show();
+                //Toast.makeText(getContext(), "Você pode agendar nesse dia", LENGTH_LONG).show();
+
+                if(Util.statusInternet_MoWi(getContext())){
+
+                    String diaDisponive = String.valueOf(diaSelected);
+                    String mesDisponive = String.valueOf(mesSelected);
+                    String anoDisponive = String.valueOf(anoSelected);
+
+                    ArrayList<String> dataList = new ArrayList<String>();
+
+                    dataList.add(diaDisponive); // position 0
+                    dataList.add(mesDisponive); // position 1
+                    dataList.add(anoDisponive); // position 2
+
+                    // chamar a nossa proxima activity
+                    Intent intent = new Intent(getContext(), HorariosActivity.class);
+                    intent.putExtra("data", dataList);
+
+                    startActivity(intent);
+
+                }else{
+                    Toast.makeText(getContext(), "Erro - Sem conexão com a internet", LENGTH_LONG).show();
+                }
+
             }
 
         }catch (ParseException e){
@@ -249,7 +276,7 @@ public class FragmentCalendario extends Fragment implements CalendarView.OnDateC
                 // tamanho calendario no celular com resolucao 480
                 calendarView.getLayoutParams().width = 730;
                 calendarView.getLayoutParams().height = 500;
-            }else{
+            }else if(width == 800){
                 calendarView.getLayoutParams().width = 800;
                 calendarView.getLayoutParams().height = 650;
             }else{
