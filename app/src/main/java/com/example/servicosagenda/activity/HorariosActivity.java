@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.accounts.Account;
+import android.accounts.AccountManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -212,7 +214,17 @@ public class HorariosActivity extends AppCompatActivity implements AdapterListVi
             public void onDataChange(@NonNull DataSnapshot dataSnapshot){
 
                 if(dataSnapshot.exists()){
-                    Toast.makeText(getBaseContext(), "Ja existe um agendamento para esse horario", Toast.LENGTH_LONG).show();
+
+                    String emailRecuperadoBD = dataSnapshot.child("email").getValue(String.class);
+
+                    String emailDispositivoUsuario = obterEmail();
+
+                    if(emailRecuperadoBD.equals(emailDispositivoUsuario)){
+                        Toast.makeText(getBaseContext(), "O e-mail e Igual você pode alterar ou Remover os dados", Toast.LENGTH_LONG).show();
+                    }else{
+                        Toast.makeText(getBaseContext(), "Não foi você quem faz o agendamento", Toast.LENGTH_LONG).show();
+                    }
+
                 }else{
                     //Toast.makeText(getBaseContext(), "Agendamento Disponivel", Toast.LENGTH_LONG).show();
 
@@ -238,6 +250,26 @@ public class HorariosActivity extends AppCompatActivity implements AdapterListVi
         });
 
     }
+
+    // ======================================= OBTER EMAIL =======================================
+
+    private String obterEmail() {
+
+        AccountManager accountManager = AccountManager.get(this);
+        Account[] accounts = accountManager.getAccounts();
+
+        for (Account account: accounts){
+
+            String email = account.name; // email = test@gmail.com
+
+            if(email.contains("@")){ // ele so vai cair nesse if se tiver @ escrito
+                return email;
+            }
+        }
+
+        return "";
+    }
+
 
     // ----------------------------------------------- CLICO DE VIDA ACTIVITY -----------------------------------------------
 

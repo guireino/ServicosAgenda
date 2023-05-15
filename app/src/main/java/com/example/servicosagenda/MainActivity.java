@@ -1,9 +1,11 @@
 package com.example.servicosagenda;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -12,6 +14,7 @@ import android.util.Log;
 
 import com.example.servicosagenda.fragment.FragmentCalendario;
 import com.example.servicosagenda.fragment.FragmentHome;
+import com.example.servicosagenda.util.Permissao;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.database.annotations.Nullable;
 
@@ -41,8 +44,21 @@ public class MainActivity extends AppCompatActivity {
 
         fragmentManager = getSupportFragmentManager();
 
-        // instanciando frament no mainactivity
+        // instanciando frament no mainActivity
         fragmentManager.beginTransaction().replace(R.id.frameLayout_Fragment, fragmentHome).commit();
+
+        permissao();
+    }
+
+    private void permissao() {
+
+        String permissoes[] = new String[]{ // buscando persicao para usuario
+            Manifest.permission.GET_ACCOUNTS, Manifest.permission.READ_CONTACTS
+        };
+
+        // fazer com aparese para usuario tela as opcao para usuario permitir
+        Permissao.validate(this, 333, permissoes);
+
     }
 
     private void navigationBtm(){
@@ -74,5 +90,10 @@ public class MainActivity extends AppCompatActivity {
         };
 
         btmNavigationView.setOnNavigationItemSelectedListener(onNavigationItemSelectedListener);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
     }
 }
