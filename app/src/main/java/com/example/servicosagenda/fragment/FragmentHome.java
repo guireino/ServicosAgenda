@@ -56,6 +56,8 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 
     private String latitude, longitude;
 
+    public static boolean offlineFirebase = false;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -93,6 +95,8 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 
         database = FirebaseDatabase.getInstance();
 
+        iniciarModoOfflineFirebase();
+
         //buscando caminho do bd
         reference = database.getReference().child("DB").child("Home").child("Dados");
 
@@ -122,6 +126,21 @@ public class FragmentHome extends Fragment implements View.OnClickListener {
 
         // Inflate the layout for this fragment
         return view;
+    }
+
+    private void iniciarModoOfflineFirebase(){
+
+        try {
+            if(!offlineFirebase){
+                FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+                offlineFirebase = true;
+            }else{ //esta offline
+
+            }
+
+        }catch (Exception e){
+
+        }
     }
 
     @Override
